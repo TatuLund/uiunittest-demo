@@ -47,6 +47,7 @@ public class AddressesView extends Div implements BeforeEnterObserver {
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
+    private final Button delete = new Button("Delete");
 
     private final BeanValidationBinder<SampleAddress> binder;
 
@@ -66,6 +67,9 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         createEditorLayout(splitLayout);
 
         add(splitLayout);
+
+        // Configure Form
+        binder = new BeanValidationBinder<>(SampleAddress.class);
 
         // Configure Grid
         grid.addColumn("street").setAutoWidth(true);
@@ -88,9 +92,6 @@ public class AddressesView extends Div implements BeforeEnterObserver {
             }
         });
 
-        // Configure Form
-        binder = new BeanValidationBinder<>(SampleAddress.class);
-
         // Bind fields. This is where you'd define e.g. validation rules
 
         binder.bindInstanceFields(this);
@@ -106,16 +107,24 @@ public class AddressesView extends Div implements BeforeEnterObserver {
                     this.sampleAddress = new SampleAddress();
                 }
                 binder.writeBean(this.sampleAddress);
-                sampleAddressService.update(this.sampleAddress);
+                SampleAddress saved = sampleAddressService.update(this.sampleAddress);
                 clearForm();
                 refreshGrid();
-                Notification.show("SampleAddress details stored.");
+                Notification.show("'"+saved.toString()+"' stored.");
                 UI.getCurrent().navigate(AddressesView.class);
             } catch (ValidationException validationException) {
                 Notification.show("An exception happened while trying to store the sampleAddress details.");
             }
         });
 
+        delete.addClickListener(e -> {
+            if (this.sampleAddress != null) {
+                sampleAddressService.delete(this.sampleAddress.getId());
+                clearForm();
+                refreshGrid();
+                Notification.show("Deleted.");
+            }
+        });
     }
 
     @Override
@@ -147,10 +156,15 @@ public class AddressesView extends Div implements BeforeEnterObserver {
 
         FormLayout formLayout = new FormLayout();
         street = new TextField("Street");
+        street.setId("street");
         postalCode = new TextField("Postal Code");
+        postalCode.setId("postalcode");
         city = new TextField("City");
+        city.setId("city");
         state = new TextField("State");
+        state.setId("state");
         country = new TextField("Country");
+        country.setId("country");
         formLayout.add(street, postalCode, city, state, country);
 
         editorDiv.add(formLayout);
@@ -163,8 +177,12 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
         cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        cancel.setId("cancel");
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        save.setId("save");
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        delete.setId("delete");
+        buttonLayout.add(save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 

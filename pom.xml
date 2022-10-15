@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <!-- Project from https://start.vaadin.com/project/0022ae06-6278-443c-8ebc-a0fa57b54103 -->
+    <!-- Project from https://start.vaadin.com/project/1326018e-071b-4ba9-aa3f-602fa500bc22 -->
     <groupId>com.example.application</groupId>
     <artifactId>register</artifactId>
     <name>register</name>
@@ -121,6 +121,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+        <groupId>org.springframework.security</groupId>
+        	<artifactId>spring-security-test</artifactId>
+        	<scope>test</scope>
+		</dependency>
+		<dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>exampledata</artifactId>
+            <version>6.0.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-testbench</artifactId>
             <scope>test</scope>
@@ -154,7 +165,7 @@
                 <!-- Clean build and startup time for Vaadin apps sometimes may exceed
                      the default Spring Boot's 30sec timeout.  -->
                 <configuration>
-                    <jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5839</jvmArguments>
+                    <jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5823</jvmArguments>
                     <wait>500</wait>
                     <maxAttempts>240</maxAttempts>
                 </configuration>
@@ -169,6 +180,10 @@
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-maven-plugin</artifactId>
                 <version>${vaadin.version}</version>
+                <configuration>
+                	<pnpnEnable>true</pnpnEnable>
+                	<requireHomeNodeExec>true</requireHomeNodeExec>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -199,8 +214,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                             <productionMode>true</productionMode>
-                            <pnpmEnable>true</pnpmEnable>
+                            <productionMode>true</productionMode>
                         </configuration>
                     </plugin>
                 </plugins>

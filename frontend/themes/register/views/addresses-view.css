@@ -16,7 +16,7 @@
 .addresses-view .editor-layout {
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 500px;
 }
 
 .addresses-view .editor {
