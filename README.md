@@ -1,7 +1,27 @@
 # Register
 
-This project can be used as a starting point to create your own Vaadin application with Spring Boot.
-It contains all the necessary configuration and some placeholder files to get you started.
+This is demo application of how to do UI unit testing with Vaadin 23 Spring Boot application using
+Vaadin TestBench.
+
+Documentation:
+
+https://vaadin.com/docs/latest/testing/ui-unit
+
+UI Unit Tests are run via mocked Vaadin system without a browser, thus they run quicker. Check the example 
+test story in `AddressViewTest.java`.
+
+- Open `AddressView`
+- Input a new address in the `Form`
+- Click `Save`
+- Verify `Notification` with correct message
+- Verify that new address appears in `Grid`
+- Select the newly added address in `Grid`
+- Verify that `Form` is populated by new address
+- Click `Delete`
+- Verify `Notification` with correct message
+
+For sake of comparison the same user story is included as TestBench/Selenium based browser test
+in `AddressViewIT.java`
 
 ## Running the application
 
@@ -31,6 +51,7 @@ Once the JAR file is built, you can run it using
 - `views` package in `src/main/java` contains the server-side Java views of your application.
 - `views` folder in `frontend/` contains the client-side JavaScript views of your application.
 - `themes` folder in `frontend/` contains the custom CSS styles.
+-
 
 ## Useful links
 
