@@ -50,20 +50,20 @@ public class AddressesViewTest extends SpringUIUnit4Test {
         // Assert that form is empty
         assertFormIsEmpty();
 
-        // Pick last row from the Grid 
+        // Filter the item from the Grid 
+        test($(TextField.class).id("filter")).setValue("ruukki");
         Grid<SampleAddress> grid = $(Grid.class).first();
         GridTester grid_ = test(grid);
-        grid_.getCellText(500, 0);
 
         // Assert Grid row content is the same we entered
-        assertEquals("Ruukkikatu 2-4", grid_.getCellText(500, 0));
-        assertEquals("20540", grid_.getCellText(500, 1));
-        assertEquals("Turku", grid_.getCellText(500, 2));
-        assertEquals("-", grid_.getCellText(500, 3));
-        assertEquals("Finland", grid_.getCellText(500, 4));
+        assertEquals("Ruukkikatu 2-4", grid_.getCellText(0, 0));
+        assertEquals("20540", grid_.getCellText(0, 1));
+        assertEquals("Turku", grid_.getCellText(0, 2));
+        assertEquals("-", grid_.getCellText(0, 3));
+        assertEquals("Finland", grid_.getCellText(0, 4));
 
         // Select the item
-        grid_.select(500);
+        grid_.select(0);
 
         // Assert that form is correctly populated
         assertEquals("Ruukkikatu 2-4",

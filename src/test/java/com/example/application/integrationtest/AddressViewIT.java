@@ -46,20 +46,19 @@ public class AddressViewIT extends AbstractViewTest {
         // Assert that form is empty
         assertFormIsEmpty();
 
-        // Pick last item from the Grid
+        // Filter the item
+        $(TextFieldElement.class).id("filter").setValue("ruukki");
         GridElement grid = $(GridElement.class).first();
-        grid.scrollToRow(500);
 
-        int lastRow = grid.getRowCount() - 1;
         // Assert that item is the same as we entered
-        assertEquals("Ruukkikatu 2-4", grid.getCell(lastRow, 0).getText());
-        assertEquals("20540", grid.getCell(lastRow, 1).getText());
-        assertEquals("Turku", grid.getCell(lastRow, 2).getText());
-        assertEquals("-", grid.getCell(lastRow, 3).getText());
-        assertEquals("Finland", grid.getCell(lastRow, 4).getText());
+        assertEquals("Ruukkikatu 2-4", grid.getCell(0, 0).getText());
+        assertEquals("20540", grid.getCell(0, 1).getText());
+        assertEquals("Turku", grid.getCell(0, 2).getText());
+        assertEquals("-", grid.getCell(0, 3).getText());
+        assertEquals("Finland", grid.getCell(0, 4).getText());
 
         // Select the item
-        grid.select(lastRow);
+        grid.select(0);
 
         // Assert that form is correctly populated
         assertEquals("Ruukkikatu 2-4",

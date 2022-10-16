@@ -16,7 +16,7 @@ public interface SampleAddressService {
 
     public void delete(UUID id);
 
-    public Page<SampleAddress> list(Pageable pageable);
+    public Page<SampleAddress> list(Pageable pageable, Optional<String> filter);
 
-    public int count();
+    public int count(Optional<String> filter);
 }

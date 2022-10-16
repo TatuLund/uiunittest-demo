@@ -30,12 +30,20 @@ public class SampleAddressServiceImpl implements SampleAddressService {
         repository.deleteById(id);
     }
 
-    public Page<SampleAddress> list(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<SampleAddress> list(Pageable pageable, Optional<String> filter) {
+        if (filter.isPresent()) {
+            return repository.findAllByStreetContainsIgnoreCase((String) filter.get(), pageable);
+        } else {
+            return repository.findAll(pageable);
+        }
     }
 
-    public int count() {
-        return (int) repository.count();
+    public int count(Optional<String> filter) {
+        if (filter.isPresent()) {
+            return repository.countByStreetContainsIgnoreCase(filter.get());
+        } else {
+            return (int) repository.count();
+        }
     }
 
 }

@@ -9,6 +9,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.dataview.GridDataView;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,6 +17,8 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -37,20 +40,23 @@ public class AddressesView extends Div implements BeforeEnterObserver {
     private final String SAMPLEADDRESS_ID = "sampleAddressID";
     private final String SAMPLEADDRESS_EDIT_ROUTE_TEMPLATE = "addresses/%s/edit";
 
-    private final Grid<SampleAddress> grid = new Grid<>(SampleAddress.class, false);
+    private final Grid<SampleAddress> grid = new Grid<>(SampleAddress.class,
+            false);
 
     private TextField street;
     private TextField postalCode;
     private TextField city;
     private TextField state;
     private TextField country;
+    private TextField filter = new TextField();
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
     private final Button delete = new Button("Delete");
 
     private final BeanValidationBinder<SampleAddress> binder;
-
+    ConfigurableFilterDataProvider<SampleAddress, Void, String> filteredDataProvider;
+    
     private SampleAddress sampleAddress;
 
     private final SampleAddressService sampleAddressService;
@@ -77,15 +83,27 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         grid.addColumn("city").setAutoWidth(true);
         grid.addColumn("state").setAutoWidth(true);
         grid.addColumn("country").setAutoWidth(true);
-        grid.setItems(query -> sampleAddressService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        DataProvider<SampleAddress, String> dataProvider = DataProvider
+                .fromFilteringCallbacks(
+                        query -> sampleAddressService.list(
+                                PageRequest.of(query.getPage(),
+                                        query.getPageSize(),
+                                        VaadinSpringDataHelpers
+                                                .toSpringDataSort(query)),
+                                query.getFilter()).stream(),
+                        query -> sampleAddressService.count(query.getFilter()));
+        filteredDataProvider = dataProvider
+                .withConfigurableFilter();
+        grid.setItems(filteredDataProvider);
+
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(SAMPLEADDRESS_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(
+                        String.format(SAMPLEADDRESS_EDIT_ROUTE_TEMPLATE,
+                                event.getValue().getId()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(AddressesView.class);
@@ -95,7 +113,11 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         // Bind fields. This is where you'd define e.g. validation rules
 
         binder.bindInstanceFields(this);
-
+        
+        filter.addValueChangeListener(event -> {
+            filteredDataProvider.setFilter(event.getValue());
+        });
+        
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
@@ -107,13 +129,15 @@ public class AddressesView extends Div implements BeforeEnterObserver {
                     this.sampleAddress = new SampleAddress();
                 }
                 binder.writeBean(this.sampleAddress);
-                SampleAddress saved = sampleAddressService.update(this.sampleAddress);
+                SampleAddress saved = sampleAddressService
+                        .update(this.sampleAddress);
                 clearForm();
                 refreshGrid();
-                Notification.show("'"+saved.toString()+"' stored.");
+                Notification.show("'" + saved.toString() + "' stored.");
                 UI.getCurrent().navigate(AddressesView.class);
             } catch (ValidationException validationException) {
-                Notification.show("An exception happened while trying to store the sampleAddress details.");
+                Notification.show(
+                        "An exception happened while trying to store the sampleAddress details.");
             }
         });
 
@@ -129,15 +153,18 @@ public class AddressesView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> sampleAddressId = event.getRouteParameters().get(SAMPLEADDRESS_ID).map(UUID::fromString);
+        Optional<UUID> sampleAddressId = event.getRouteParameters()
+                .get(SAMPLEADDRESS_ID).map(UUID::fromString);
         if (sampleAddressId.isPresent()) {
-            Optional<SampleAddress> sampleAddressFromBackend = sampleAddressService.get(sampleAddressId.get());
+            Optional<SampleAddress> sampleAddressFromBackend = sampleAddressService
+                    .get(sampleAddressId.get());
             if (sampleAddressFromBackend.isPresent()) {
                 populateForm(sampleAddressFromBackend.get());
             } else {
-                Notification.show(
-                        String.format("The requested sampleAddress was not found, ID = %s", sampleAddressId.get()),
-                        3000, Notification.Position.BOTTOM_START);
+                Notification.show(String.format(
+                        "The requested sampleAddress was not found, ID = %s",
+                        sampleAddressId.get()), 3000,
+                        Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
                 refreshGrid();
@@ -190,7 +217,9 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         Div wrapper = new Div();
         wrapper.setClassName("grid-wrapper");
         splitLayout.addToPrimary(wrapper);
-        wrapper.add(grid);
+        filter.setPlaceholder("Filter by street");
+        filter.setId("filter");
+        wrapper.add(filter, grid);
     }
 
     private void refreshGrid() {

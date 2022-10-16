@@ -14,6 +14,7 @@ test story in `AddressViewTest.java`.
 - Input a new address in the `Form`
 - Click `Save`
 - Verify `Notification` with correct message
+- Trigger `Grid` filter.
 - Verify that new address appears in `Grid`
 - Select the newly added address in `Grid`
 - Verify that `Form` is populated by new address
