@@ -77,6 +77,8 @@ public class AddressViewIT extends AbstractViewTest {
 
         // Assert that form is empty
         assertFormIsEmpty();
+        
+        assertEquals(0, grid.getRowCount());
     }
 
     private void assertFormIsEmpty() {
