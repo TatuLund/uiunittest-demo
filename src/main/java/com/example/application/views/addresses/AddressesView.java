@@ -9,7 +9,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.grid.dataview.GridDataView;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -27,7 +26,6 @@ import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 
 import javax.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +97,6 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         grid.setItems(filteredDataProvider);
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
-        grid.getDataCommunicator().enablePushUpdates(Executors.newSingleThreadExecutor());
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {

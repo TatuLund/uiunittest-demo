@@ -37,7 +37,7 @@ public class AddressesViewTest extends SpringUIUnit4Test {
                 .setValue("Finland");
 
         // Click save button
-        $(Button.class).withCaption("Save").first().click();
+        test($(Button.class).withCaption("Save").first()).click();
 
         // Notification will appear
         Notification notification = $(Notification.class).first();
@@ -75,7 +75,7 @@ public class AddressesViewTest extends SpringUIUnit4Test {
                 $(TextField.class).withCaption("Country").first().getValue());
 
         // Click to delete
-        $(Button.class).withCaption("Delete").first().click();
+        test($(Button.class).withCaption("Delete").first()).click();
         notification = $(Notification.class).last();
         assertEquals("Deleted.", test(notification).getText());
         // Assert that form is empty
