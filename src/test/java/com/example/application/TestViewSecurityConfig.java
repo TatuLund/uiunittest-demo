@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.example.application.data.service.MockSampleAddressService;
 import com.example.application.data.service.SampleAddressService;
 import com.example.application.security.AuthenticatedUser;
+import com.example.application.views.SessionStore;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.server.auth.ViewAccessChecker;
 import com.vaadin.flow.spring.SpringViewAccessChecker;
@@ -40,6 +41,11 @@ public class TestViewSecurityConfig {
     @Bean
     AuthenticatedUser mockAuthenticatedUser() {
         return new MockAuthenticatedUser();
+    }
+
+    @Bean
+    SessionStore mySessionStore() {
+        return new SessionStore();
     }
 
     // Dummy authenticated user is needed to satifisfy injection, user is

@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridTester;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.testbench.unit.SpringUIUnit4Test;
@@ -25,6 +26,10 @@ public class AddressesViewTest extends SpringUIUnit4Test {
 
         // Navigate to AddressesView
         navigate(AddressesView.class);
+
+        // Assert that demo bean has the value set in MainLayout
+        AddressesView addresses = (AddressesView) this.getCurrentView();
+        assertEquals("Hello", addresses.store.getAttribute());
 
         // Populate form
         test($(TextField.class).withCaption("Street").first())
@@ -80,7 +85,7 @@ public class AddressesViewTest extends SpringUIUnit4Test {
         assertEquals("Deleted.", test(notification).getText());
         // Assert that form is empty
         assertFormIsEmpty();
-
+        
         assertEquals(0,grid_.size());
     }
 

@@ -35,10 +35,11 @@ public class MainLayout extends AppLayout {
     private AuthenticatedUser authenticatedUser;
     private AccessAnnotationChecker accessChecker;
 
-    public MainLayout(AuthenticatedUser authenticatedUser, AccessAnnotationChecker accessChecker) {
+    public MainLayout(AuthenticatedUser authenticatedUser, AccessAnnotationChecker accessChecker, SessionStore store) {
         this.authenticatedUser = authenticatedUser;
         this.accessChecker = accessChecker;
 
+        store.setAttribute("Hello");
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();

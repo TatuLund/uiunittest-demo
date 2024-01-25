@@ -3,6 +3,8 @@ package com.example.application.views.addresses;
 import com.example.application.data.entity.SampleAddress;
 import com.example.application.data.service.SampleAddressService;
 import com.example.application.views.MainLayout;
+import com.example.application.views.SessionStore;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -10,6 +12,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
@@ -18,6 +21,8 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -28,6 +33,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import javax.annotation.security.PermitAll;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 
@@ -60,9 +66,11 @@ public class AddressesView extends Div implements BeforeEnterObserver {
     private SampleAddress sampleAddress;
 
     private final SampleAddressService sampleAddressService;
+    SessionStore store;
 
     @Autowired
-    public AddressesView(SampleAddressService sampleAddressService) {
+    public AddressesView(SampleAddressService sampleAddressService, SessionStore store) {
+        this.store = store;
         this.sampleAddressService = sampleAddressService;
         addClassNames("addresses-view");
 
