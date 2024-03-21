@@ -37,6 +37,17 @@ public class AddressesViewTest extends SpringUIUnit4Test {
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
+    public void openToEditByInvalidIdTest() {
+        // Dig first Address from service and navigate to it
+        String path = "addresses/foo/edit";
+        navigate(path, AddressesView.class);
+        Notification notification = $(Notification.class).last();
+        assertEquals("The requested sampleAddress id was not valid",
+                test(notification).getText());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     public void openToEditTest() {
         
         // Dig first Address from service and navigate to it
@@ -86,7 +97,7 @@ public class AddressesViewTest extends SpringUIUnit4Test {
         test($(Button.class).withCaption("Save").first()).click();
 
         // Notification will appear
-        Notification notification = $(Notification.class).first();
+        Notification notification = $(Notification.class).last();
         assertEquals("'Ruukkikatu 2-4:20540:Turku:-:Finland' stored.",
                 test(notification).getText());
 

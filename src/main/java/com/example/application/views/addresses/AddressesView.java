@@ -62,14 +62,15 @@ public class AddressesView extends Div implements BeforeEnterObserver {
 
     private final BeanValidationBinder<SampleAddress> binder;
     ConfigurableFilterDataProvider<SampleAddress, Void, String> filteredDataProvider;
-    
+
     private SampleAddress sampleAddress;
 
     private final SampleAddressService sampleAddressService;
     SessionStore store;
 
     @Autowired
-    public AddressesView(SampleAddressService sampleAddressService, SessionStore store) {
+    public AddressesView(SampleAddressService sampleAddressService,
+            SessionStore store) {
         this.store = store;
         this.sampleAddressService = sampleAddressService;
         addClassNames("addresses-view");
@@ -100,8 +101,7 @@ public class AddressesView extends Div implements BeforeEnterObserver {
                                                 .toSpringDataSort(query)),
                                 query.getFilter()).stream(),
                         query -> sampleAddressService.count(query.getFilter()));
-        filteredDataProvider = dataProvider
-                .withConfigurableFilter();
+        filteredDataProvider = dataProvider.withConfigurableFilter();
         grid.setItems(filteredDataProvider);
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -121,11 +121,11 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         // Bind fields. This is where you'd define e.g. validation rules
 
         binder.bindInstanceFields(this);
-        
+
         filter.addValueChangeListener(event -> {
             filteredDataProvider.setFilter(event.getValue());
         });
-        
+
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
@@ -161,9 +161,18 @@ public class AddressesView extends Div implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<UUID> sampleAddressId = event.getRouteParameters()
-                .get(SAMPLEADDRESS_ID).map(UUID::fromString);
-        if (sampleAddressId.isPresent()) {
+        Optional<UUID> sampleAddressId = null;
+        if (event.getRouteParameters() == null || !event.getRouteParameters()
+                .get(SAMPLEADDRESS_ID).isPresent()) {
+            return;
+        }
+        try {
+            sampleAddressId = event.getRouteParameters().get(SAMPLEADDRESS_ID)
+                    .map(UUID::fromString);
+        } catch (IllegalArgumentException e) {
+
+        }
+        if (sampleAddressId != null && sampleAddressId.isPresent()) {
             Optional<SampleAddress> sampleAddressFromBackend = sampleAddressService
                     .get(sampleAddressId.get());
             if (sampleAddressFromBackend.isPresent()) {
@@ -178,6 +187,13 @@ public class AddressesView extends Div implements BeforeEnterObserver {
                 refreshGrid();
                 event.forwardTo(AddressesView.class);
             }
+        } else {
+            Notification.show(
+                    String.format(
+                            "The requested sampleAddress id was not valid",
+                            event.getRouteParameters().get(SAMPLEADDRESS_ID)),
+                    3000, Notification.Position.BOTTOM_START);
+
         }
     }
 
