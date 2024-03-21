@@ -2,7 +2,14 @@ package com.example.application.views.addresses;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -16,14 +23,48 @@ import com.vaadin.testbench.unit.SpringUIUnit4Test;
 
 import com.example.application.TestViewSecurityConfig;
 import com.example.application.data.entity.SampleAddress;
+import com.example.application.data.service.SampleAddressService;
 
 @ContextConfiguration(classes = TestViewSecurityConfig.class)
 public class AddressesViewTest extends SpringUIUnit4Test {
 
+    @Autowired
+    SampleAddressService service;
+
+    @Before
+    public void toView() {
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    public void openToEditTest() {
+        
+        // Dig first Address from service and navigate to it
+        String path = "addresses/";
+        SampleAddress result = service
+                .list(PageRequest.of(0, 1), Optional.of("")).get().findFirst()
+                .get();
+        UUID uuid = result.getId();
+        path += uuid.toString() + "/edit";
+        navigate(path, AddressesView.class);
+
+        // Assert that form is correctly populated
+        assertEquals(result.getStreet(),
+                $(TextField.class).withCaption("Street").first().getValue());
+        assertEquals(result.getPostalCode(), $(TextField.class).withCaption("Postal Code")
+                .first().getValue());
+        assertEquals(result.getCity(),
+                $(TextField.class).withCaption("City").first().getValue());
+        assertEquals(result.getState(),
+                $(TextField.class).withCaption("State").first().getValue());
+        assertEquals(result.getCountry(),
+                $(TextField.class).withCaption("Country").first().getValue());
+
+    }
+
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void addItemRemoveItem() {
-
         // Navigate to AddressesView
         navigate(AddressesView.class);
 
@@ -52,7 +93,7 @@ public class AddressesViewTest extends SpringUIUnit4Test {
         // Assert that form is empty
         assertFormIsEmpty();
 
-        // Filter the item from the Grid 
+        // Filter the item from the Grid
         test($(TextField.class).id("filter")).setValue("ruukki");
         Grid<SampleAddress> grid = $(Grid.class).first();
         GridTester grid_ = test(grid);
@@ -85,8 +126,8 @@ public class AddressesViewTest extends SpringUIUnit4Test {
         assertEquals("Deleted.", test(notification).getText());
         // Assert that form is empty
         assertFormIsEmpty();
-        
-        assertEquals(0,grid_.size());
+
+        assertEquals(0, grid_.size());
     }
 
     private void assertFormIsEmpty() {
