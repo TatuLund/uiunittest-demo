@@ -58,7 +58,8 @@ public abstract class AbstractViewTest extends TestBenchTestCase {
     @Before
     public void setup() throws Exception {
         ChromeOptions options = new ChromeOptions();
-        // options.setHeadless(true);
+        options.addArguments("--headless=new");
+        options.addArguments("--window-position=-2400,-2400");
         setDriver(TestBench.createDriver(new ChromeDriver(options)));
         getDriver().get(getURL(route));
 
