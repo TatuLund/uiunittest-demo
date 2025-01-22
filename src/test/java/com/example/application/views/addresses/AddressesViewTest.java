@@ -1,14 +1,13 @@
 package com.example.application.views.addresses;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
@@ -16,22 +15,20 @@ import org.springframework.test.context.ContextConfiguration;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridTester;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.testbench.unit.SpringUIUnit4Test;
-
+import com.vaadin.testbench.unit.SpringUIUnitTest;
 import com.example.application.TestViewSecurityConfig;
 import com.example.application.data.entity.SampleAddress;
 import com.example.application.data.service.SampleAddressService;
 
 @ContextConfiguration(classes = TestViewSecurityConfig.class)
-public class AddressesViewTest extends SpringUIUnit4Test {
+public class AddressesViewTest extends SpringUIUnitTest {
 
     @Autowired
     SampleAddressService service;
 
-    @Before
+    @BeforeEach
     public void toView() {
     }
 
@@ -49,7 +46,7 @@ public class AddressesViewTest extends SpringUIUnit4Test {
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void openToEditTest() {
-        
+
         // Dig first Address from service and navigate to it
         String path = "addresses/";
         SampleAddress result = service
@@ -62,8 +59,8 @@ public class AddressesViewTest extends SpringUIUnit4Test {
         // Assert that form is correctly populated
         assertEquals(result.getStreet(),
                 $(TextField.class).withCaption("Street").first().getValue());
-        assertEquals(result.getPostalCode(), $(TextField.class).withCaption("Postal Code")
-                .first().getValue());
+        assertEquals(result.getPostalCode(), $(TextField.class)
+                .withCaption("Postal Code").first().getValue());
         assertEquals(result.getCity(),
                 $(TextField.class).withCaption("City").first().getValue());
         assertEquals(result.getState(),
@@ -107,7 +104,7 @@ public class AddressesViewTest extends SpringUIUnit4Test {
         // Filter the item from the Grid
         test($(TextField.class).id("filter")).setValue("ruukki");
         Grid<SampleAddress> grid = $(Grid.class).first();
-        GridTester grid_ = test(grid);
+        GridTester<Grid<SampleAddress>, SampleAddress> grid_ = test(grid);
 
         // Assert Grid row content is the same we entered
         assertEquals("Ruukkikatu 2-4", grid_.getCellText(0, 0));

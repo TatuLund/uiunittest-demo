@@ -1,14 +1,13 @@
 package com.example.application.integrationtest;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.NotFoundException;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
 import com.vaadin.flow.component.grid.testbench.GridElement;
 import com.vaadin.flow.component.notification.testbench.NotificationElement;
 import com.vaadin.flow.component.textfield.testbench.TextFieldElement;
+import com.vaadin.testbench.BrowserTest;
 
 public class AddressViewIT extends AbstractViewTest {
 
@@ -25,7 +24,7 @@ public class AddressViewIT extends AbstractViewTest {
         login("admin", "admin");
     }
 
-    @Test
+    @BrowserTest
     public void addItemRemoveItem() {
 
         // Populate form
@@ -40,7 +39,8 @@ public class AddressViewIT extends AbstractViewTest {
 
         // Notification will appear
         NotificationElement notification = $(NotificationElement.class).last();
-        assertEquals("'Ruukkikatu 2-4:20540:Turku:-:Finland' stored.",
+        Assertions.assertEquals(
+                "'Ruukkikatu 2-4:20540:Turku:-:Finland' stored.",
                 notification.getText());
 
         // Assert that form is empty
@@ -51,41 +51,48 @@ public class AddressViewIT extends AbstractViewTest {
         GridElement grid = $(GridElement.class).first();
 
         // Assert that item is the same as we entered
-        assertEquals("Ruukkikatu 2-4", grid.getCell(0, 0).getText());
-        assertEquals("20540", grid.getCell(0, 1).getText());
-        assertEquals("Turku", grid.getCell(0, 2).getText());
-        assertEquals("-", grid.getCell(0, 3).getText());
-        assertEquals("Finland", grid.getCell(0, 4).getText());
+        Assertions.assertEquals("Ruukkikatu 2-4", grid.getCell(0, 0).getText());
+        Assertions.assertEquals("20540", grid.getCell(0, 1).getText());
+        Assertions.assertEquals("Turku", grid.getCell(0, 2).getText());
+        Assertions.assertEquals("-", grid.getCell(0, 3).getText());
+        Assertions.assertEquals("Finland", grid.getCell(0, 4).getText());
 
         // Select the item
         grid.select(0);
 
         // Assert that form is correctly populated
-        assertEquals("Ruukkikatu 2-4",
+        Assertions.assertEquals("Ruukkikatu 2-4",
                 $(TextFieldElement.class).id("street").getValue());
-        assertEquals("20540",
+        Assertions.assertEquals("20540",
                 $(TextFieldElement.class).id("postalcode").getValue());
-        assertEquals("Turku", $(TextFieldElement.class).id("city").getValue());
-        assertEquals("-", $(TextFieldElement.class).id("state").getValue());
-        assertEquals("Finland",
+        Assertions.assertEquals("Turku",
+                $(TextFieldElement.class).id("city").getValue());
+        Assertions.assertEquals("-",
+                $(TextFieldElement.class).id("state").getValue());
+        Assertions.assertEquals("Finland",
                 $(TextFieldElement.class).id("country").getValue());
 
         // Click to delete
         $(ButtonElement.class).id("delete").click();
         notification = $(NotificationElement.class).last();
-        assertEquals("Deleted.", notification.getText());
+        Assertions.assertEquals("Deleted.", notification.getText());
 
         // Assert that form is empty
         assertFormIsEmpty();
-        
-        assertEquals(0, grid.getRowCount());
+
+        Assertions.assertEquals(0, grid.getRowCount());
     }
 
     private void assertFormIsEmpty() {
-        assertEquals("", $(TextFieldElement.class).id("street").getValue());
-        assertEquals("", $(TextFieldElement.class).id("postalcode").getValue());
-        assertEquals("", $(TextFieldElement.class).id("city").getValue());
-        assertEquals("", $(TextFieldElement.class).id("state").getValue());
-        assertEquals("", $(TextFieldElement.class).id("country").getValue());
+        Assertions.assertEquals("",
+                $(TextFieldElement.class).id("street").getValue());
+        Assertions.assertEquals("",
+                $(TextFieldElement.class).id("postalcode").getValue());
+        Assertions.assertEquals("",
+                $(TextFieldElement.class).id("city").getValue());
+        Assertions.assertEquals("",
+                $(TextFieldElement.class).id("state").getValue());
+        Assertions.assertEquals("",
+                $(TextFieldElement.class).id("country").getValue());
     }
 }

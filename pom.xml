@@ -12,20 +12,20 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<java.version>11</java.version>
-		<vaadin.version>23.5.8</vaadin.version>
+		<java.version>17</java.version>
+		<vaadin.version>24.6.1</vaadin.version>
 		<!-- this parameter is needed as spring-boot bom overwrites it -->
 		<selenium.version>4.25.0</selenium.version>
 		<!-- selenium is so much verbose -->
 		<maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-		<httpclient5.version>5.2.1</httpclient5.version>
-        <httpcore5.version>5.2.1</httpcore5.version>
+<!--		<httpclient5.version>5.2.1</httpclient5.version>-->
+<!--		<httpcore5.version>5.2.1</httpcore5.version>-->
 	</properties>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.18</version>
+		<version>3.4.1</version>
 	</parent>
 
 	<repositories>
@@ -93,6 +93,11 @@
 			<artifactId>vaadin</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.parttio</groupId>
+			<artifactId>line-awesome</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring-boot-starter</artifactId>
 		</dependency>
@@ -134,37 +139,42 @@
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>exampledata</artifactId>
-			<version>6.0.0</version>
+			<version>6.2.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-testbench</artifactId>
+			<artifactId>vaadin-testbench-junit5</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!-- Include JUnit 4 support for TestBench and others -->
 		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
-			<scope>test</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.hamcrest</groupId>
-					<artifactId>hamcrest-core</artifactId>
-				</exclusion>
-			</exclusions>
+    		<groupId>com.vaadin</groupId>
+    		<artifactId>vaadin-testbench-unit-junit5</artifactId>
+    		<scope>test</scope>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.junit.vintage</groupId>-->
+<!--			<artifactId>junit-vintage-engine</artifactId>-->
+<!--			<scope>test</scope>-->
+<!--			<exclusions>-->
+<!--				<exclusion>-->
+<!--					<groupId>org.hamcrest</groupId>-->
+<!--					<artifactId>hamcrest-core</artifactId>-->
+<!--				</exclusion>-->
+<!--			</exclusions>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>io.github.bonigarcia</groupId>
 			<artifactId>webdrivermanager</artifactId>
 			<version>5.7.0</version>
 			<scope>test</scope>
-<!--			<exclusions>-->
-<!--				<exclusion>-->
-<!--					<groupId>org.apache.httpcomponents.core5</groupId>-->
-<!--					<artifactId>httpcore5</artifactId>-->
-<!--				</exclusion>-->
-<!--			</exclusions>-->
+			<!--			<exclusions>-->
+			<!--				<exclusion>-->
+			<!--					<groupId>org.apache.httpcomponents.core5</groupId>-->
+			<!--					<artifactId>httpcore5</artifactId>-->
+			<!--				</exclusion>-->
+			<!--			</exclusions>-->
 		</dependency>
 	</dependencies>
 
@@ -178,9 +188,6 @@
 				exceed
                      the default Spring Boot's 30sec timeout.  -->
 				<configuration>
-					<jvmArguments>
-						-Xdebug
-						-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5823</jvmArguments>
 					<wait>500</wait>
 					<maxAttempts>240</maxAttempts>
 				</configuration>

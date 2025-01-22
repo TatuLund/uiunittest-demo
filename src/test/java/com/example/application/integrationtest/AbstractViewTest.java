@@ -4,9 +4,9 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 
 import java.util.Objects;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -14,35 +14,23 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import com.vaadin.flow.component.login.testbench.LoginFormElement;
-import com.vaadin.testbench.ScreenshotOnFailureRule;
+import com.vaadin.testbench.BrowserTestBase;
+import com.vaadin.testbench.ScreenshotOnFailureExtension;
 import com.vaadin.testbench.TestBench;
-import com.vaadin.testbench.TestBenchTestCase;
 
 /**
  * Base class for ITs
- * <p>
- * The tests use Chrome driver (see pom.xml for integration-tests profile) to
- * run integration tests on a headless Chrome. If a property {@code test.use
- * .hub} is set to true, {@code AbstractViewTest} will assume that the TestBench
- * test is running in a CI environment. In order to keep the this class light,
- * it makes certain assumptions about the CI environment (such as available
- * environment variables). It is not advisable to use this class as a base class
- * for you own TestBench tests.
- * <p>
- * To learn more about TestBench, visit <a href=
- * "https://vaadin.com/docs/v10/testbench/testbench-overview.html">Vaadin
- * TestBench</a>.
  */
-public abstract class AbstractViewTest extends TestBenchTestCase {
+public abstract class AbstractViewTest extends BrowserTestBase {
     private static final int SERVER_PORT = 8080;
 
     private final String route;
 
-    @Rule
-    public ScreenshotOnFailureRule rule = new ScreenshotOnFailureRule(this,
-            true);
+    @RegisterExtension
+    public ScreenshotOnFailureExtension screenshotOnFailureExtension = new ScreenshotOnFailureExtension(
+            this, true);
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClass() {
         WebDriverManager.chromedriver().setup();
     }
@@ -55,7 +43,7 @@ public abstract class AbstractViewTest extends TestBenchTestCase {
         this.route = route;
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new");
@@ -80,8 +68,9 @@ public abstract class AbstractViewTest extends TestBenchTestCase {
         loginForm.getPasswordField().setValue(pass);
         blur();
         loginForm.getSubmitButton().click();
+        waitForElementPresent(By.id("app-layout"));
     }
- 
+
     public void wait(int millis) {
         try {
             Thread.sleep(millis);

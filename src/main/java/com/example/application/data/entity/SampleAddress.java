@@ -1,7 +1,7 @@
 package com.example.application.data.entity;
 
-import javax.annotation.Nonnull;
-import javax.persistence.Entity;
+import jakarta.annotation.Nonnull;
+import jakarta.persistence.Entity;
 
 @Entity
 public class SampleAddress extends AbstractEntity {
