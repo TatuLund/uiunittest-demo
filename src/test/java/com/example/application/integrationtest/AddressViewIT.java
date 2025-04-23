@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.NotFoundException;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
+import com.vaadin.flow.component.dialog.testbench.DialogElement;
 import com.vaadin.flow.component.grid.testbench.GridElement;
 import com.vaadin.flow.component.notification.testbench.NotificationElement;
 import com.vaadin.flow.component.textfield.testbench.TextFieldElement;
@@ -74,6 +75,9 @@ public class AddressViewIT extends AbstractViewTest {
 
         // Click to delete
         $(ButtonElement.class).id("delete").click();
+        var dialog = $(DialogElement.class).first();
+        Assertions.assertTrue(dialog.isOpen());
+        $(ButtonElement.class).id("yes-button").click();        
         notification = $(NotificationElement.class).last();
         Assertions.assertEquals("Deleted.", notification.getText());
 

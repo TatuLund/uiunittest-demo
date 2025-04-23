@@ -1,6 +1,7 @@
 package com.example.application.views.addresses;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridTester;
 import com.vaadin.flow.component.notification.Notification;
@@ -130,8 +132,13 @@ public class AddressesViewTest extends SpringUIUnitTest {
 
         // Click to delete
         test($(Button.class).withCaption("Delete").first()).click();
+        // Confirm
+        var dialog = $(Dialog.class).first();
+        assertTrue(dialog.isOpened());
+        test($(Button.class).id("yes-button")).click();
         notification = $(Notification.class).last();
         assertEquals("Deleted.", test(notification).getText());
+
         // Assert that form is empty
         assertFormIsEmpty();
 

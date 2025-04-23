@@ -8,6 +8,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -150,11 +152,22 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         });
 
         delete.addClickListener(e -> {
-            if (this.sampleAddress != null) {
-                sampleAddressService.delete(this.sampleAddress.getId());
-                clearForm();
-                refreshGrid();
-                Notification.show("Deleted.");
+            if (sampleAddress != null) {
+                var dialog = new Dialog();
+                var yes = new Button("Yes", confirmed -> {
+                    sampleAddressService.delete(sampleAddress.getId());
+                    clearForm();
+                    refreshGrid();
+                    Notification.show("Deleted.");
+                    dialog.close();
+                });
+                yes.setId("yes-button");
+                var no = new Button("No", cancelled -> {
+                    dialog.close();
+                });
+                dialog.setHeaderTitle("Really delete?");
+                dialog.getFooter().add(no, yes);
+                dialog.open();
             }
         });
     }
