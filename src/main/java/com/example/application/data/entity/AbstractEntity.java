@@ -1,5 +1,6 @@
 package com.example.application.data.entity;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
@@ -10,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class AbstractEntity {
+public abstract class AbstractEntity implements Serializable {
 
     @Id
     @GeneratedValue

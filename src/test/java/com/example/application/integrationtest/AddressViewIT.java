@@ -27,7 +27,7 @@ public class AddressViewIT extends AbstractViewTest {
 
     @BrowserTest
     public void addItemRemoveItem() {
-
+        
         // Populate form
         $(TextFieldElement.class).id("street").setValue("Ruukkikatu 2-4");
         $(TextFieldElement.class).id("postalcode").setValue("20540");

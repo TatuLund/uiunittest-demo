@@ -1,24 +1,32 @@
 package com.example.application.views.addresses;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridTester;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.testbench.unit.SerializationDebugUtil;
 import com.vaadin.testbench.unit.SpringUIUnitTest;
 import com.example.application.TestViewSecurityConfig;
 import com.example.application.data.entity.SampleAddress;
@@ -36,13 +44,14 @@ public class AddressesViewTest extends SpringUIUnitTest {
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
-    public void openToEditByInvalidIdTest() {
+    public void openToEditByInvalidIdTest() throws IOException {
         // Dig first Address from service and navigate to it
         String path = "addresses/foo/edit";
-        navigate(path, AddressesView.class);
+        var view = navigate(path, AddressesView.class);
         Notification notification = $(Notification.class).last();
         assertEquals("The requested sampleAddress id was not valid",
                 test(notification).getText());
+        SerializationDebugUtil.assertSerializable(view);
     }
 
     @Test
@@ -56,7 +65,7 @@ public class AddressesViewTest extends SpringUIUnitTest {
                 .get();
         UUID uuid = result.getId();
         path += uuid.toString() + "/edit";
-        navigate(path, AddressesView.class);
+        var view = navigate(path, AddressesView.class);
 
         // Assert that form is correctly populated
         assertEquals(result.getStreet(),
@@ -69,14 +78,14 @@ public class AddressesViewTest extends SpringUIUnitTest {
                 $(TextField.class).withCaption("State").first().getValue());
         assertEquals(result.getCountry(),
                 $(TextField.class).withCaption("Country").first().getValue());
-
+        SerializationDebugUtil.assertSerializable(view);
     }
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     public void addItemRemoveItem() {
         // Navigate to AddressesView
-        navigate(AddressesView.class);
+        var view = navigate(AddressesView.class);
 
         // Assert that demo bean has the value set in MainLayout
         AddressesView addresses = (AddressesView) this.getCurrentView();
@@ -143,6 +152,9 @@ public class AddressesViewTest extends SpringUIUnitTest {
         assertFormIsEmpty();
 
         assertEquals(0, grid_.size());
+
+        SerializationDebugUtil.assertSerializable(view);
+
     }
 
     private void assertFormIsEmpty() {

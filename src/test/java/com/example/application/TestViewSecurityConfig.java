@@ -1,5 +1,6 @@
 package com.example.application;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Bean;
@@ -15,26 +16,32 @@ import com.vaadin.flow.server.auth.NavigationAccessControl;
 import com.vaadin.flow.spring.security.SpringNavigationAccessControl;
 
 @Configuration
-public class TestViewSecurityConfig {
+public class TestViewSecurityConfig implements Serializable {
+
+    private transient NavigationAccessControl navigationAccessControl = new SpringNavigationAccessControl();
+    private transient AnnotatedViewAccessChecker annotatedViewAccessChecker = new AnnotatedViewAccessChecker(
+            new AccessAnnotationChecker());
+    private transient AccessAnnotationChecker accessAnnotationChecker = new AccessAnnotationChecker();
+    private transient SampleAddressService sampleAddressService = new MockSampleAddressService();
 
     @Bean
     NavigationAccessControl navigationAccessControl() {
-        return new SpringNavigationAccessControl();
+        return navigationAccessControl;
     }
 
     @Bean
     AnnotatedViewAccessChecker viewAccessChecker() {
-        return new AnnotatedViewAccessChecker(new AccessAnnotationChecker());
+        return annotatedViewAccessChecker;
     }
 
     @Bean
     AccessAnnotationChecker mockAccessAnnotationChecker() {
-        return new AccessAnnotationChecker();
+        return accessAnnotationChecker;
     }
 
     @Bean
     SampleAddressService myService() {
-        return new MockSampleAddressService();
+        return sampleAddressService;
     }
 
     @Bean
@@ -49,7 +56,7 @@ public class TestViewSecurityConfig {
 
     // Dummy authenticated user is needed to satifisfy injection, user is
     // actually faked by @WithMockUser
-    public class MockAuthenticatedUser implements AuthenticatedUser {
+    public static class MockAuthenticatedUser implements AuthenticatedUser {
 
         @Override
         public Optional<com.example.application.data.entity.User> get() {

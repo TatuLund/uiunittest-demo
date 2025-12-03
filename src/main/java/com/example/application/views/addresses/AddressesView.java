@@ -67,7 +67,7 @@ public class AddressesView extends Div implements BeforeEnterObserver {
 
     private SampleAddress sampleAddress;
 
-    private final SampleAddressService sampleAddressService;
+    private transient SampleAddressService sampleAddressService;
     SessionStore store;
 
     @Autowired
@@ -96,13 +96,13 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         grid.addColumn("country").setAutoWidth(true);
         DataProvider<SampleAddress, String> dataProvider = DataProvider
                 .fromFilteringCallbacks(
-                        query -> sampleAddressService.list(
+                        query -> this.sampleAddressService.list(
                                 PageRequest.of(query.getPage(),
                                         query.getPageSize(),
                                         VaadinSpringDataHelpers
                                                 .toSpringDataSort(query)),
                                 query.getFilter()).stream(),
-                        query -> sampleAddressService.count(query.getFilter()));
+                        query -> this.sampleAddressService.count(query.getFilter()));
         filteredDataProvider = dataProvider.withConfigurableFilter();
         grid.setItems(filteredDataProvider);
 
@@ -110,7 +110,7 @@ public class AddressesView extends Div implements BeforeEnterObserver {
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
-            if (event.getValue() != null) {
+            if (event.isFromClient() && event.getValue() != null) {
                 UI.getCurrent().navigate(
                         String.format(SAMPLEADDRESS_EDIT_ROUTE_TEMPLATE,
                                 event.getValue().getId()));
@@ -125,7 +125,9 @@ public class AddressesView extends Div implements BeforeEnterObserver {
         binder.bindInstanceFields(this);
 
         filter.addValueChangeListener(event -> {
-            filteredDataProvider.setFilter(event.getValue());
+            if (event.isFromClient()) {
+                filteredDataProvider.setFilter(event.getValue());
+            }
         });
 
         cancel.addClickListener(e -> {
@@ -139,7 +141,7 @@ public class AddressesView extends Div implements BeforeEnterObserver {
                     this.sampleAddress = new SampleAddress();
                 }
                 binder.writeBean(this.sampleAddress);
-                SampleAddress saved = sampleAddressService
+                SampleAddress saved = this.sampleAddressService
                         .update(this.sampleAddress);
                 clearForm();
                 refreshGrid();
@@ -155,7 +157,7 @@ public class AddressesView extends Div implements BeforeEnterObserver {
             if (sampleAddress != null) {
                 var dialog = new Dialog();
                 var yes = new Button("Yes", confirmed -> {
-                    sampleAddressService.delete(sampleAddress.getId());
+                    this.sampleAddressService.delete(sampleAddress.getId());
                     clearForm();
                     refreshGrid();
                     Notification.show("Deleted.");
@@ -186,7 +188,7 @@ public class AddressesView extends Div implements BeforeEnterObserver {
 
         }
         if (sampleAddressId != null && sampleAddressId.isPresent()) {
-            Optional<SampleAddress> sampleAddressFromBackend = sampleAddressService
+            Optional<SampleAddress> sampleAddressFromBackend = this.sampleAddressService
                     .get(sampleAddressId.get());
             if (sampleAddressFromBackend.isPresent()) {
                 populateForm(sampleAddressFromBackend.get());
