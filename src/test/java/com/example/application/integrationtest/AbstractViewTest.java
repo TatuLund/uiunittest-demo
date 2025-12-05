@@ -13,7 +13,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import com.vaadin.flow.component.login.testbench.LoginFormElement;
+import com.vaadin.flow.component.login.testbench.LoginOverlayElement;
 import com.vaadin.testbench.BrowserTestBase;
 import com.vaadin.testbench.ScreenshotOnFailureExtension;
 import com.vaadin.testbench.TestBench;
@@ -47,7 +47,6 @@ public abstract class AbstractViewTest extends BrowserTestBase {
     public void setup() throws Exception {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless=new");
-        options.addArguments("--window-position=-2400,-2400");
         setDriver(TestBench.createDriver(new ChromeDriver(options)));
         getDriver().get(getURL(route));
 
@@ -63,7 +62,7 @@ public abstract class AbstractViewTest extends BrowserTestBase {
     }
 
     public void login(String user, String pass) {
-        var loginForm = $(LoginFormElement.class).first();
+        var loginForm = $(LoginOverlayElement.class).first();
         loginForm.getUsernameField().setValue(user);
         loginForm.getPasswordField().setValue(pass);
         blur();
@@ -112,15 +111,6 @@ public abstract class AbstractViewTest extends BrowserTestBase {
      */
     private static String getDeploymentHostname() {
         return isUsingHub() ? System.getenv("HOSTNAME") : "localhost";
-    }
-
-    protected void waitForDevServer() {
-        Object result;
-        do {
-            getCommandExecutor().waitForVaadin();
-            result = getCommandExecutor().executeScript(
-                    "return window.Vaadin && window.Vaadin.Flow && window.Vaadin.Flow.devServerIsNotLoaded;");
-        } while (Boolean.TRUE.equals(result));
     }
 
     protected void waitForElementPresent(final By by) {

@@ -5,7 +5,6 @@ import com.example.application.data.service.UserRepository;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.server.VaadinServletRequest;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -18,25 +17,27 @@ public class AuthenticatedUserImpl implements AuthenticatedUser {
 
     private final UserRepository userRepository;
 
-    @Autowired
     public AuthenticatedUserImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     private Optional<Authentication> getAuthentication() {
         SecurityContext context = SecurityContextHolder.getContext();
-        return Optional.ofNullable(context.getAuthentication())
-                .filter(authentication -> !(authentication instanceof AnonymousAuthenticationToken));
+        return Optional.ofNullable(context.getAuthentication()).filter(
+                authentication -> !(authentication instanceof AnonymousAuthenticationToken));
     }
 
     public Optional<User> get() {
-        return getAuthentication().map(authentication -> userRepository.findByUsername(authentication.getName()));
+        return getAuthentication().map(authentication -> userRepository
+                .findByUsername(authentication.getName()));
     }
 
     public void logout() {
         UI.getCurrent().getPage().setLocation(SecurityConfiguration.LOGOUT_URL);
         SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
-        logoutHandler.logout(VaadinServletRequest.getCurrent().getHttpServletRequest(), null, null);
+        logoutHandler.logout(
+                VaadinServletRequest.getCurrent().getHttpServletRequest(), null,
+                null);
     }
 
 }

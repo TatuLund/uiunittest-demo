@@ -1,6 +1,7 @@
 package com.example.application.integrationtest;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.openqa.selenium.NotFoundException;
 
 import com.vaadin.flow.component.button.testbench.ButtonElement;
@@ -12,12 +13,13 @@ import com.vaadin.testbench.BrowserTest;
 
 public class AddressViewIT extends AbstractViewTest {
 
-    @Override
-    public void setup() throws Exception {
-        super.setup();
+    @BeforeEach
+    public void init() throws Exception {
+        setup();
         // Hide dev mode gizmo, it would interfere screenshot tests
         try {
             $("vaadin-dev-tools").first().setProperty("hidden", true);
+            $("copilot-main").first().setProperty("hidden", true);
         } catch (NotFoundException e) {
 
         }
@@ -27,7 +29,7 @@ public class AddressViewIT extends AbstractViewTest {
 
     @BrowserTest
     public void addItemRemoveItem() {
-        
+
         // Populate form
         $(TextFieldElement.class).id("street").setValue("Ruukkikatu 2-4");
         $(TextFieldElement.class).id("postalcode").setValue("20540");
@@ -77,7 +79,7 @@ public class AddressViewIT extends AbstractViewTest {
         $(ButtonElement.class).id("delete").click();
         var dialog = $(DialogElement.class).first();
         Assertions.assertTrue(dialog.isOpen());
-        $(ButtonElement.class).id("yes-button").click();        
+        $(ButtonElement.class).id("yes-button").click();
         notification = $(NotificationElement.class).last();
         Assertions.assertEquals("Deleted.", notification.getText());
 

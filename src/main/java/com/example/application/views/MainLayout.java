@@ -6,6 +6,7 @@ import com.example.application.views.addresses.AddressesView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.avatar.AvatarVariant;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
@@ -15,13 +16,20 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.menubar.MenuBarVariant;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
+import com.vaadin.flow.server.streams.DownloadHandler;
+import com.vaadin.flow.server.streams.DownloadResponse;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
+import jakarta.annotation.security.PermitAll;
+
 import java.io.ByteArrayInputStream;
 import java.util.Optional;
 
@@ -30,7 +38,8 @@ import org.vaadin.lineawesome.LineAwesomeIcon;
 /**
  * The main view is a top-level placeholder for other views.
  */
-public class MainLayout extends AppLayout {
+@PermitAll
+public class MainLayout extends AppLayout implements AfterNavigationObserver {
 
     private H2 viewTitle;
 
@@ -90,14 +99,17 @@ public class MainLayout extends AppLayout {
             User user = maybeUser.get();
 
             Avatar avatar = new Avatar(user.getName());
-            StreamResource resource = new StreamResource("profile-pic",
-                    () -> new ByteArrayInputStream(user.getProfilePicture()));
-            avatar.setImageResource(resource);
-            avatar.setThemeName("xsmall");
+            var imageHandler = DownloadHandler
+                    .fromInputStream(event -> new DownloadResponse(
+                            new ByteArrayInputStream(user.getProfilePicture()),
+                            "image.jpg", "image/jpeg", -1));
+            avatar.setImageHandler(imageHandler);
+            avatar.addThemeVariants(AvatarVariant.LUMO_XSMALL);
             avatar.getElement().setAttribute("tabindex", "-1");
 
             MenuBar userMenu = new MenuBar();
-            userMenu.setThemeName("tertiary-inline contrast");
+            userMenu.addThemeVariants(MenuBarVariant.LUMO_TERTIARY_INLINE,
+                    MenuBarVariant.LUMO_CONTRAST);
 
             MenuItem userName = userMenu.addItem("");
             Div div = new Div();
@@ -122,8 +134,7 @@ public class MainLayout extends AppLayout {
     }
 
     @Override
-    protected void afterNavigation() {
-        super.afterNavigation();
+    public void afterNavigation(AfterNavigationEvent event) {
         viewTitle.setText(getCurrentPageTitle());
     }
 

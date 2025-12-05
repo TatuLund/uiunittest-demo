@@ -3,7 +3,6 @@ package com.example.application.data.service;
 import com.example.application.data.entity.User;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ public class UserService {
 
     private final UserRepository repository;
 
-    @Autowired
     public UserService(UserRepository repository) {
         this.repository = repository;
     }
