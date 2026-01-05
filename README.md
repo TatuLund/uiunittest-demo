@@ -1,6 +1,6 @@
 # Register
 
-This is demo application of how to do UI unit testing with Vaadin 23 Spring Boot application using
+This is demo application of how to do UI unit testing with Vaadin 25 and Spring Boot 4 application using
 Vaadin TestBench.
 
 Documentation:
